@@ -26,12 +26,12 @@ Powered by **GitHub Actions**, this bot runs fully on cloud infrastructure autom
 
 ## 📂 Project Structure
 
-
+```
 ├── math_bot.py                 # Main Python script handling logic, curriculum, and Telegram API
 └── .github
     └── workflows
         └── run_bot.yml   # GitHub Actions workflow configuration (Cron & Environment)
-
+```
 ## 🛠️ Tech Stack
 ​Language: Python 3.10+
 ​HTTP Requests: requests library
