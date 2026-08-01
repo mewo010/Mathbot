@@ -3,9 +3,12 @@ import os
 import random
 import requests
 
+# ---------- Environment Variables ----------
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+# Can be a single chat ID (e.g., "-123456789") or multiple separated by commas.
+TELEGRAM_CHAT_IDS = os.environ.get("TELEGRAM_CHAT_ID", "")
 
+# ---------- Data ----------
 scientific_math_curriculum = [
     {
         "day": 1,
@@ -150,93 +153,75 @@ scientific_math_curriculum = [
 ]
 
 motivation_quotes = [
-    {
-        "quote": "הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.",
-        "author": "פטר דרוקר",
-    },
-    {
-        "quote": "לעולם אל תפסיק ללמוד, כי החיים מעולם לא מפסיקים ללמד.",
-        "author": "אנונימי",
-    },
-    {
-        "quote": "ההצלחה אינה סופית, הכישלון אינו קטלני: האומץ להמשיך הוא שקובע.",
-        "author": "ווינסטון צ'רצ'יל",
-    },
-    {
-        "quote": "תאמין שאתה יכול, ואתה כבר חצי הדרך שם.",
-        "author": "תיאדור רוזוולט",
-    },
-    {
-        "quote": "למדו אתמול, חיו היום, תקוו למחר. הדבר החשוב ביותר הוא לא להפסיק לשאול שאלות.",
-        "author": "אלברט איינשטיין",
-    },
-    {
-        "quote": "הקשיים נועדו להכניע אותנו או לחשל אותנו. הבחירה בידיים שלנו.",
-        "author": "אריסטו",
-    },
-    {
-        "quote": "עתידך תלוי במה שאתה עושה היום, לא מחר.",
-        "author": "מהטמה גנדי",
-    },
-    {
-        "quote": "אל תפחד ללכת לאט, תפחד רק לעמוד במקום.",
-        "author": "פתגם סיני",
-    },
-    {
-        "quote": "הדרך לידע רצופה בשאלות קשות ובסקרנות בלתי פוסקת.",
-        "author": "אייזק ניוטון",
-    },
-    {
-        "quote": "כל מומחה גדול היה פעם מתחיל גמור שלא ויתר.",
-        "author": "הלן קלר",
-    },
+    {"quote": "הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו.", "author": "פטר דרוקר"},
+    {"quote": "לעולם אל תפסיק ללמוד, כי החיים מעולם לא מפסיקים ללמד.", "author": "אנונימי"},
+    {"quote": "ההצלחה אינה סופית, הכישלון אינו קטלני: האומץ להמשיך הוא שקובע.", "author": "ווינסטון צ'רצ'יל"},
+    {"quote": "תאמין שאתה יכול, ואתה כבר חצי הדרך שם.", "author": "תיאדור רוזוולט"},
+    {"quote": "למדו אתמול, חיו היום, תקוו למחר. הדבר החשוב ביותר הוא לא להפסיק לשאול שאלות.", "author": "אלברט איינשטיין"},
+    {"quote": "הקשיים נועדו להכניע אותנו או לחשל אותנו. הבחירה בידיים שלנו.", "author": "אריסטו"},
+    {"quote": "עתידך תלוי במה שאתה עושה היום, לא מחר.", "author": "מהטמה גנדי"},
+    {"quote": "אל תפחד ללכת לאט, תפחד רק לעמוד במקום.", "author": "פתגם סיני"},
+    {"quote": "הדרך לידע רצופה בשאלות קשות ובסקרנות בלתי פוסקת.", "author": "אייזק ניוטון"},
+    {"quote": "כל מומחה גדול היה פעם מתחיל גמור שלא ויתר.", "author": "הלן קלר"},
 ]
 
-
+# ---------- Core Function ----------
 def send_telegram_task():
-    try:
-        if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-            print("שגיאה: משתני הסביבה לא הוגדרו כראוי.")
-            return
+    if not TELEGRAM_BOT_TOKEN:
+        print("❌ שגיאה: TELEGRAM_BOT_TOKEN לא הוגדר.")
+        return
 
-        day_index = (datetime.datetime.now().day - 1) % len(
-            scientific_math_curriculum
-        )
-        task = scientific_math_curriculum[day_index]
-        random_quote = random.choice(motivation_quotes)
+    # Parse chat IDs (support comma-separated list, trim whitespace)
+    chat_ids = [cid.strip() for cid in TELEGRAM_CHAT_IDS.split(",") if cid.strip()]
+    if not chat_ids:
+        print("❌ שגיאה: TELEGRAM_CHAT_ID לא הוגדר.")
+        return
 
-        message = (
-            f"🌟 *מוטיבציה להיום:*\n"
-            f"💬 *\"{random_quote['quote']}\"*\n"
-            f"— {random_quote['author']}\n\n"
-            f"-----------------------------------\n\n"
-            f"🎯 *אימון יומי בחשבון - מגמה מדעית (כיתה ט)* 🎯\n\n"
-            f"📂 *קטגוריה:* {task['category']}\n"
-            f"📌 *נושא להיום:* {task['topic']}\n\n"
-            f"📺 *סרטון לצפייה:* \n"
-            f"[{task['video_title']}]({task['video_url']})\n\n"
-            f"💡 *משימה להיום:* צפה בסרטון בעיון, רשום את הדגשים במחברת, ופתור לפחות 3-4 תרגילים מתקדמים ברמת קושי גבוהה.\n\n"
-            f"בהצלחה! המשך קיץ פרודוקטיבי 💪"
-        )
+    # Build the message (same as before)
+    day_index = (datetime.datetime.now().day - 1) % len(scientific_math_curriculum)
+    task = scientific_math_curriculum[day_index]
+    random_quote = random.choice(motivation_quotes)
 
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        payload = {
-            "chat_id": TELEGRAM_CHAT_ID,
-            "text": message,
-            "parse_mode": "Markdown",
-            "disable_web_page_preview": False,
-        }
+    message = (
+        f"🌟 *מוטיבציה להיום:*\n"
+        f"💬 *\"{random_quote['quote']}\"*\n"
+        f"— {random_quote['author']}\n\n"
+        f"-----------------------------------\n\n"
+        f"🎯 *אימון יומי בחשבון - מגמה מדעית (כיתה ט)* 🎯\n\n"
+        f"📂 *קטגוריה:* {task['category']}\n"
+        f"📌 *נושא להיום:* {task['topic']}\n\n"
+        f"📺 *סרטון לצפייה:* \n"
+        f"[{task['video_title']}]({task['video_url']})\n\n"
+        f"💡 *משימה להיום:* צפה בסרטון בעיון, רשום את הדגשים במחברת, ופתור לפחות 3-4 תרגילים מתקדמים ברמת קושי גבוהה.\n\n"
+        f"בהצלחה! המשך קיץ פרודוקטיבי 💪"
+    )
 
-        response = requests.post(url, json=payload, timeout=10)
-        if response.status_code == 200:
-            print("ההודעה נשלחה בהצלחה לטלגרם!")
-        else:
-            print(f"שגיאה בשליחה לטלגרם: {response.text}")
+    # Send to each chat ID
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload_base = {
+        "text": message,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": False,
+    }
 
-    except Exception as e:
-        print(f"שגיאה במערכת: {e}")
+    success_count = 0
+    for chat_id in chat_ids:
+        payload = payload_base.copy()
+        payload["chat_id"] = chat_id
+        try:
+            response = requests.post(url, json=payload, timeout=10)
+            if response.status_code == 200:
+                print(f"✅ הודעה נשלחה בהצלחה ל־{chat_id}")
+                success_count += 1
+            else:
+                print(f"❌ שגיאה בשליחה ל־{chat_id}: {response.text}")
+        except Exception as e:
+            print(f"❌ שגיאה בשליחה ל־{chat_id}: {e}")
 
+    if success_count == len(chat_ids):
+        print("🎉 כל ההודעות נשלחו בהצלחה!")
+    else:
+        print(f"⚠️ נשלחו {success_count} מתוך {len(chat_ids)} הודעות.")
 
 if __name__ == "__main__":
     send_telegram_task()
-
