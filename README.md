@@ -51,4 +51,4 @@ Powered by **GitHub Actions**, this bot runs fully on cloud infrastructure autom
 ​4. Test It Manually
 ​Go to the Actions tab in your repository, select Run Math Bot Daily, and click Run workflow to test it out instantly!
 ## 📄 License
-​This project is open-source and available under the MIT License.
+​This project is open-source and available under the [MIT License](https://github.com/mewo010/Mathbot?tab=MIT-1-ov-file#).
