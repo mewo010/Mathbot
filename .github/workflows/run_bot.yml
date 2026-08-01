@@ -2,9 +2,8 @@ name: Run Math Bot Daily
 
 on:
   schedule:
-    # מוגדר לרוץ כל יום בשעה 06:00 ב-UTC (שזה בערך 08:00 בבוקר שעון ישראל)
     - cron: '0 6 * * *'
-  workflow_dispatch: # מאפשר לך ללחוץ ידנית באתר ולבדוק שזה עובד מתי שתרצה
+  workflow_dispatch:
 
 jobs:
   run-bot:
@@ -25,4 +24,6 @@ jobs:
       - name: Run bot script
         run: |
           python math_bot.py
-
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
